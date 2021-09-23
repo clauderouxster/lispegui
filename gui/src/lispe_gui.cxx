@@ -105,8 +105,8 @@ static void close_callback(Fl_Widget *w, void *data) {
     }
 }
 
-#define locking(lisp)  if (lisp->checkforLock()) Fl::lock();
-#define unlocking(lisp)  if (lisp->checkforLock()) {Fl::unlock(); Fl::awake();}
+#define locking(lisp)  if (lisp->threaded()) Fl::lock();
+#define unlocking(lisp)  if (lisp->threaded()) {Fl::unlock(); Fl::awake();}
 
 static void timeout_callback(void *data) {
     if (stopall || data == NULL)
@@ -1290,7 +1290,7 @@ Fltk_window::Fltk_window(LispE* lsp, short t, int x, int y, int w, int h, string
     label = l;
     widget = new Doublewindow(lisp, x,y,w,h,label.c_str(), this);
     on_close_function = null_;
-    lisp->delegation->toBeCleanedOnError(this, lisp->checkforLock());
+    lisp->delegation->toBeCleanedOnError(this, lisp->threaded());
 #ifdef FLTK14
     Fl_Sys_Menu_Bar::window_menu_style(Fl_Sys_Menu_Bar::no_window_menu);
 #endif
@@ -1303,7 +1303,7 @@ Fltk_window::Fltk_window(LispE* lsp, short t, int x, int y, string& l, Element* 
     label = l;
     widget = new Doublewindow(lisp, x,y,label.c_str(), this);
     on_close_function = null_;
-    lisp->delegation->toBeCleanedOnError(this, lisp->checkforLock());
+    lisp->delegation->toBeCleanedOnError(this, lisp->threaded());
 #ifdef FLTK14
     Fl_Sys_Menu_Bar::window_menu_style(Fl_Sys_Menu_Bar::no_window_menu);
 #endif
@@ -1311,7 +1311,7 @@ Fltk_window::Fltk_window(LispE* lsp, short t, int x, int y, string& l, Element* 
 }
 
 Fltk_window::~Fltk_window() {
-    lisp->delegation->removeFromForceClean(this, lisp->checkforLock());
+    lisp->delegation->removeFromForceClean(this, lisp->threaded());
     close_callback(widget, this);
 }
 
